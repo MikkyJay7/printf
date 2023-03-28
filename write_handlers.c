@@ -50,7 +50,8 @@ int handle_write_char(char c, char buffer[],
  * @flags: Calculates active flags
  * @precision: precision specifier
  * @size: Size specifier
- * @width: measure size
+ * @width: get width.
+ *
  * Return: Number of chars printed.
  */
 int write_number(int is_negative, int ind, char buffer[],
@@ -81,7 +82,7 @@ int write_number(int is_negative, int ind, char buffer[],
  * @flags: Flags
  * @width: Width
  * @prec: Precision specifier
- * @Length: Number Length
+ * @length: Number of length
  * @padd: Pading char
  * @extra_c: Extra char
  *
@@ -96,8 +97,10 @@ int write_num(int ind, char buffer[],
 	if (prec == 0 && ind == BUFF_SIZE - 2 && buffer[ind] == '0' && width == 0)
 		return (0); /* printf(".0d", 0) no chars is printed */
 	if (prec == 0 && ind == BUFF_SIZE - 2 && buffer[ind] == '0')
-		buffer[ind] = padd = '';/* width is displayed width padding '' */
-	if (prec > length)
+		buffer[ind] = padd = '';/* width is displayed with padding '' */
+	if (prec > 0 && prec < length)
+		padd = '';
+	while (prec > length)
 		buffer[--ind] = '0', length++;
 	if (extra_c != 0)
 		length++;
@@ -132,7 +135,7 @@ int write_num(int ind, char buffer[],
 }
 
 /**
- * write_unsignd - Writes an unsigned number
+ * write_unsgnd - Writes an unsigned number
  * @is_negative: Number indicating if the num is negative
  * @ind: Index at which the number starts in the buffer
  * @buffer: Array of chars
@@ -143,9 +146,11 @@ int write_num(int ind, char buffer[],
  *
  * Return: Number of written chars.
  */
-int write_unsgnd(int is_negative, int size)
+int write_unsgnd(int is_negative, int ind,
+		char buffer[],
+		int flags, int width, int precision, int size)
 {
-	/* The number is stored at the bufer's right and starts at position i */
+	/* The number is stored at the buffer's right and starts at position i */
 	int length = BUFF_SIZE - ind - 1, i = 0;
 	char padd = '';
 
@@ -153,7 +158,7 @@ int write_unsgnd(int is_negative, int size)
 	UNUSED(size);
 
 	if (precision == 0 && ind == BUFF_SIZE - 2 && buffer[ind] == '0')
-		return (0); /* printf(".0d, 0) no char is printed */
+		return (0); /* printf(".0d", 0) no char is printed */
 
 	if (precision > 0 && precision < length)
 		padd = '';
